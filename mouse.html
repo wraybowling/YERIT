@@ -10,18 +10,27 @@
   </head>
   <body>
 
-    <table>
-    <tr><td>
-    <button id="as" type="button" onclick="dump();">Dump</button>
-    </td></tr>
-    <tr><td>
+	<div id="controls">
+		<input id="recordingLength" type="text" value="3000" name="recordingLength">
+    <button id="as" type="button" onclick="dump();">Save</button>
+    <button id="recordRed" type="button" onclick="record('red');">Record red</button>
+    <button id="recordGren" type="button" onclick="record('blue');">Record green</button>
+    <button id="recordBlue" type="button" onclick="record('green');">Record blue</button>
+	</div>
+	<div>
     <canvas id="myCanvas" width="1024" height="600"></canvas>
-    </td></tr>
+	</div>
+
     <script>
-      var readings = [];
+			var readings = {
+				red: []
+				,green: []
+				,blue: []
+			};
+      var x = 0;
+      var y = 0;
 
       function dump() {
-        alert("dumping");
         // Put the object into storage
         localStorage.setItem('readings', JSON.stringify(readings));
       }
@@ -44,15 +53,27 @@
       var canvas = document.getElementById('myCanvas');
       var context = canvas.getContext('2d');
 
+      function recordXY(channel) {
+				var coords = { x: x, y: y};
+        readings[channel].push(coords); // array of arrays (2d array)
+        var message = 'Channel ' + channel + 'position: ' + x + ',' + y;
+        writeMessage(canvas, message);
+      }
+
       canvas.addEventListener('mousemove', function(evt) {
         var mousePos = getMousePos(canvas, evt);
-        var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
-        writeMessage(canvas, message);
-        var move = [mousePos.x, mousePos.y];
-        //readings = readings.concat(move); // 1d array
-        readings.push(move); // array of arrays (2d array)
+				x = mousePos.x;
+				y = mousePos.y;
       }, false);
+
+			function record(channel) {
+				var recordingLength = parseInt(document.getElementById('recordingLength').value);
+				var recordInterval = setInterval(recordXY, 1000/60.0, channel);
+				setTimeout(function() { 
+					clearInterval(recordInterval);
+					writeMessage(canvas, 'Recording complete for ' + channel + ' channel.');
+				}, recordingLength);
+			}
     </script>
-    </table>
   </body>
 </html>
