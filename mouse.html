@@ -12,7 +12,7 @@
 
 	<div id="controls">
 		<input id="recordingLength" type="text" value="3000" name="recordingLength">
-    <button id="as" type="button" onclick="dump();">Save</button>
+    <button id="as" type="button" onclick="dump('readings');">Save</button>
     <button id="recordRed" type="button" onclick="record('red');">Record red</button>
     <button id="recordGren" type="button" onclick="record('blue');">Record green</button>
     <button id="recordBlue" type="button" onclick="record('green');">Record blue</button>
@@ -30,9 +30,16 @@
       var x = 0;
       var y = 0;
 
-      function dump() {
+      function dump(name) {
+				var r = readings;
+				var l = Math.min(r.red.length, r.green.length, r.blue.length);
+				var out = [];
+				for (var i=0; i<l; i++) {
+					out.push({red: r.red[i], green: r.green[i], blue: r.blue[i]});
+				}
+
         // Put the object into storage
-        localStorage.setItem('readings', JSON.stringify(readings));
+        localStorage.setItem(name, JSON.stringify(out));
       }
 
       function writeMessage(canvas, message) {

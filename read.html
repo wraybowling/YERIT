@@ -4,11 +4,19 @@
 	<script src="sensors.js"></script>
 	<script>
 		function start() {
+			var options = {eventsFile: 'readings', tick: 1000/60.0};
+
 			var red = document.getElementById('red');
-			var options = {eventsFile: 'readings'};
+			var green = document.getElementById('green');
+			var blue = document.getElementById('blue');
+
 			function messageHandler(m) { 
-				red.style.left = '' + m[0] + 'px';
-				red.style.top = '' + m[1] + 'px';
+				red.style.left = '' + m.red.x + 'px';
+				red.style.top = '' + m.red.y + 'px';
+				green.style.left = '' + m.green.x + 'px';
+				green.style.top = '' + m.green.y + 'px';
+				blue.style.left = '' + m.blue.x + 'px';
+				blue.style.top = '' + m.blue.y + 'px';
 			}
 			onSensorsMessage(messageHandler, options);
 		}
@@ -19,18 +27,23 @@
 			padding: 0px;
 		}
 
-		#red {
+		.tracker {
 			position: fixed;
-			background: red;
 			width: 50px;
 			height: 50px;
 			top: 50px;
 			left: 50px;
 			border-radius: 10px;
 		}
+
+		#red { background: red; }
+		#green { background: green; }
+		#blue { background: blue; }
 	</style>
 </head>
 <body onLoad="start();">
-	<div id="red">red</div>
+	<div id="red" class="tracker">red</div>
+	<div id="green" class="tracker">green</div>
+	<div id="blue" class="tracker">blue</div>
 </body>
 </html>
