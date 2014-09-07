@@ -7,12 +7,13 @@
    Processing.js doesn't seem to like setting the initial parameters from js values.
 */
 
+var retrievedObject = localStorage.getItem('readings');
+var samples = [];
+
 function poll() { 
-   function rndm(){ return Math.random()*800; }
+   if (samples.length == 0 ) samples = JSON.parse(retrievedObject);
 
-   var sample = { red: { x: rndm(), y: rndm() }, green: { x: rndm(), y: rndm() }, blue: { x: rndm(), y: rndm() } }; 
-
-   return sample;
+   return samples.shift();
 }
 
 </script>
