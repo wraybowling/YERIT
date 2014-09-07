@@ -1,0 +1,21 @@
+<script src="processing.min.js"></script>
+
+<script>
+/* 
+   Control the config in circle.pde... 
+   Processing.js doesn't seem to like setting the initial parameters from js values.
+*/
+
+var retrievedObject = localStorage.getItem('readings');
+var samples = [];
+
+function poll() { 
+   if (samples.length == 0 ) samples = JSON.parse(retrievedObject);
+
+   return samples.shift();
+}
+</script>
+
+<body>
+<canvas id="canvas1" data-processing-sources="circle.pde"></canvas>
+</body>
