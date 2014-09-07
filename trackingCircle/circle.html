@@ -1,0 +1,22 @@
+<script src="processing.min.js"></script>
+
+<script>
+
+/* 
+   Control the config in circle.pde... 
+   Processing.js doesn't seem to like setting the initial parameters from js values.
+*/
+
+function poll() { 
+   function rndm(){ return Math.random()*800; }
+
+   var sample = { red: { x: rndm(), y: rndm() }, green: { x: rndm(), y: rndm() }, blue: { x: rndm(), y: rndm() } }; 
+
+   return sample;
+}
+
+</script>
+
+<body ><!-- onload="startup()" -->
+<canvas id="canvas1" data-processing-sources="circle.pde"></canvas>
+</body>
