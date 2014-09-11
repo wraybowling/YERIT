@@ -75,7 +75,6 @@
 	document.body.onmousemove = function(event){ mousemove(event); };
 
 	function tick(){
-		console.log(data.r.length)
 		tickR = (tickR + 1) % (data.r.length);
 		tickG = (tickG + 1) % (data.g.length);
 		tickB = (tickB + 1) % (data.b.length);
