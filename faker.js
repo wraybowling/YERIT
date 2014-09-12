@@ -74,6 +74,8 @@
 	document.body.onkeyup = function(event){ keyup(event); };
 	document.body.onmousemove = function(event){ mousemove(event); };
 
+	window.poll = window.poll || function(){};
+
 	function tick(){
 		tickR = (tickR + 1) % (data.r.length);
 		tickG = (tickG + 1) % (data.g.length);
