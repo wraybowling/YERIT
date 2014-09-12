@@ -1,5 +1,14 @@
-/*
 body{
-	background-color: orange;
+	background-color: #333;
 	margin:0;
-}*/
+}
+
+#turrets circle{
+	fill:rgba(255,200,0,0.5);
+}
+
+#bullets rect{
+	fill:white;
+	stroke:orange;
+	stroke-weight:1px;
+}

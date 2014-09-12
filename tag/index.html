@@ -9,9 +9,24 @@
 <body>
 
 <svg width="1024" height="768" style="background:transparent">
+	<g id="turrets">
+		<circle id="turret_0" width="200" height="200" />
+	</g>
 	<image id="player_red" xlink:href="spiral.svg" width="80" height="80" transform="translate(100,100)"/>
 	<image id="player_green" xlink:href="spiral.svg" width="80" height="80" transform="translate(200,100)"/>
-	<image id="player_blue" xlink:href="spiral.svg" width="80" height="80" transform="translate(100,200)"/>
+	<image id="player_blue" xlink:href="spiral.svg" width="80" height="80" transform="translate(100,200)" style="stroke:blue;"/>
+	<g id="bullets">
+		<rect id="bullet_0" width="10" height="4"/>
+		<rect id="bullet_1" width="10" height="4"/>
+		<rect id="bullet_2" width="10" height="4"/>
+		<rect id="bullet_3" width="10" height="4"/>
+		<rect id="bullet_4" width="10" height="4"/>
+		<rect id="bullet_5" width="10" height="4"/>
+		<rect id="bullet_6" width="10" height="4"/>
+		<rect id="bullet_7" width="10" height="4"/>
+		<rect id="bullet_8" width="10" height="4"/>
+		<rect id="bullet_9" width="10" height="4"/>
+	</g>
 	<g class="titles">
 		<text id="title_start" x="50%" y="50%">Game Start</text>
 		<text id="title_gameOver" x="50%" y="50%">Game Over</text>
@@ -24,8 +39,9 @@
 	<circle id="blue" r="12" style="stroke:blue" cx="50" cy="50"/>
 </svg>
 
-<script src="../faker.js" type="text/javascript"></script>
+
 <script src="tag.js" type="text/javascript"></script>
+<script src="../faker.js" type="text/javascript"></script>
 
 </body>
 </html>

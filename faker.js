@@ -87,6 +87,11 @@
 		svgG.setAttributeNS(null,'cy',data.g[tickG].y);
 		svgB.setAttributeNS(null,'cx',data.b[tickB].x);
 		svgB.setAttributeNS(null,'cy',data.b[tickB].y);
+		window.poll({
+			red:data.r[tickR],
+			green:data.g[tickG],
+			blue:data.b[tickB],
+		});
 	}
 
 //	tick();
