@@ -4,12 +4,15 @@
 
 ////
 
-//var players = [];
+var players = [];
 var turrets = [];
 var bullets = [];
 var tokens = [];
 var i;
 var nextBullet = 0;
+
+canvasWidth = 1200;
+canvasHeight = 600;
 
 ////
 
@@ -29,6 +32,8 @@ function player(id){
 	this.element = document.getElementById('player_'+id);
 	this.radius = 30;
 	this.it = false;
+	this.x = undefined;
+	this.y = undefined;
 }
 
 player.prototype.hitTest = function(target){
@@ -36,6 +41,8 @@ player.prototype.hitTest = function(target){
 };
 
 player.prototype.advance = function(x,y){
+	this.x = x;
+	this.y = y;
 	this.element.setAttributeNS(null,'transform','translate('+x+','+y+')');
 };
 
@@ -49,23 +56,26 @@ function bullet(id){
 }
 
 bullet.prototype.reset = function(){
-	this.x = Math.random() * 1024;
-	this.y = Math.random() * 768;
+	//this.x = Math.random() * 1024;
+	//this.y = Math.random() * 768;
 	this.active = false;
 	this.super = false;
 };
 
 bullet.prototype.advance = function(){
-	this.x += Math.cos(this.angle) * this.velocity;
-	this.y += Math.sin(this.angle) * this.velocity;
+	if(this.active){
+		this.x += Math.cos(this.angle) * this.velocity;
+		this.y += Math.sin(this.angle) * this.velocity;
 
-	var outOfBounds = this.x < 0 || this.x > 1024 || this.y < 0 || this.y > 768;
+		var outOfBounds = this.x < 0 || this.x > 1024 || this.y < 0 || this.y > 768;
 
-	if(outOfBounds){
-		this.reset();
+		if(outOfBounds){
+			//this.reset();
+			this.active = false;
+		}
+
+		this.element.setAttributeNS(null,'transform','translate('+this.x+','+this.y+') rotate('+ this.angle/Math.PI/2*360 +')');
 	}
-
-	this.element.setAttributeNS(null,'transform','translate('+this.x+','+this.y+') rotate('+ this.angle/Math.PI/2*360 +')');
 };
 
 bullet.prototype.hitTest = function(){
@@ -76,26 +86,28 @@ bullet.prototype.hitTest = function(){
 
 function turret(id){
 	this.element = document.getElementById('turret_'+id);
-	this.radius = 200;
+	this.radius = 100;
 	this.x = 1024/2;
 	this.y = 768/2;
 	return this;
 }
 
-turret.prototype.hitTest = function(player){
-	if(player.it === false && circularHitTest(this,players[i])){
-		return true;
-	}
-};
-
 turret.prototype.advance = function(){
 	for(i=0; i<players.length; i++){
-		if( this.hitTest(players[i]) ){
-
+		//not it players intersecting turret
+		if(players[i].it === false && circularHitTest(this,players[i])){
+			//var angle = (this.x - players[i].x) / (this.y - players[i].y);
+			bullets[nextBullet].x = this.x;
+			bullets[nextBullet].y = this.y;
+			//bullets[nextBullet].angle = angle;
+			bullets[nextBullet].active = true;
+			nextBullet = ++nextBullet % 10;
 		}
 	}
-	this.x += Math.random()*4 - 2;
-	this.y += Math.random()*4 - 2;
+	this.x += Math.random()*7 - 3.5;
+	this.y += Math.random()*7 - 3.5;
+	//this.radius += Math.random()*2 - 1;
+	this.element.setAttributeNS(null,'r',this.radius);
 	this.element.setAttributeNS(null,'transform','translate('+this.x+','+this.y+')');
 	return this;
 };
@@ -135,9 +147,8 @@ for(i=0; i<3; i++){
 }
 
 for(i=0; i<10; i++){
-	newToken = new token(i);
-	newToken.advance();
-	tokens.push(newToken);
+	new_token = new token(i);
+	tokens.push(new_token);
 }
 
 window.poll = function(data){
