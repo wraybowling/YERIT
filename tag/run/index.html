@@ -8,7 +8,10 @@
 
 <body>
 
-<svg width="1024" height="768" style="background:transparent">
+<svg width="1024" height="768" style="background:transparent; border:solid 2px orange;">
+	<defs>
+		<polygon id="token" points="0,9 -12,-12 12,-12" />
+	</defs>
 	<g id="turrets">
 		<circle id="turret_0" r="100" />
 		<circle id="turret_1" r="100" />
@@ -19,16 +22,16 @@
 	<circle id="player_blue" style="fill:rgba(55,100,255,0.6)" r="30" />
 	<polygon id="yerit" style="fill:none; stroke:white; stroke-width:2px;" points="0,39 -32,-22 32,-22" transform="translate(200,200)"/>
 	<g id="tokens">
-		<circle id="token_0" r="10" />
-		<circle id="token_1" r="10" />
-		<circle id="token_2" r="10" />
-		<circle id="token_3" r="10" />
-		<circle id="token_4" r="10" />
-		<circle id="token_5" r="10" />
-		<circle id="token_6" r="10" />
-		<circle id="token_7" r="10" />
-		<circle id="token_8" r="10" />
-		<circle id="token_9" r="10" />
+		<use id="token_0" xlink:href="#token" />
+		<use id="token_1" xlink:href="#token" />
+		<use id="token_2" xlink:href="#token" />
+		<use id="token_3" xlink:href="#token" />
+		<use id="token_4" xlink:href="#token" />
+		<use id="token_5" xlink:href="#token" />
+		<use id="token_6" xlink:href="#token" />
+		<use id="token_7" xlink:href="#token" />
+		<use id="token_8" xlink:href="#token" />
+		<use id="token_9" xlink:href="#token" />
 	</g>
 	<g id="bullets">
 		<rect id="bullet_0" width="10" height="4"/>
@@ -52,12 +55,15 @@
 		<rect id="bullet_18" width="10" height="4"/>
 		<rect id="bullet_19" width="10" height="4"/>
 	</g>
-	<g class="titles">
-		<text id="gameStart" x="50%" y="50%">Game Start</text>
-		<text id="gameOver" x="50%" y="50%">Game Over</text>
+	<g class="scores">
 		<text id="score_red" x="20%" y="40px">red:0</text>
-		<text id="score_green" x="40%" y="40px">green:0</text>
-		<text id="score_blue" x="60%" y="40px">blue:0</text>
+		<text id="score_green" x="50%" y="40px">green:0</text>
+		<text id="score_blue" x="80%" y="40px">blue:0</text>
+	</g>
+	<g class="titles">
+		<text id="gameStart" x="50%" y="50%">YER IT!</text>
+		<text id="gameOver" x="50%" y="50%">GAME OVER</text>
+		<text id="winner" x="50%" y="60%">WHOA! red wins!!</text>
 	</g>
 </svg>
 

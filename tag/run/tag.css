@@ -8,7 +8,8 @@ body{
 	stroke:rgba(255,0,200,1);
 }
 
-#tokens circle{
+#tokens circle,
+#tokens use{
 	fill:gold;
 	stroke:none;
 }
@@ -19,9 +20,18 @@ body{
 	stroke-weight:1px;
 }
 
-.titles text{
+.scores text{
 	font-family: monospace;
 	font-size:20px;
+	fill:white;
+	stroke:none;
+	text-align:center;
+	text-anchor:middle;
+}
+
+.titles text{
+	font-family: monospace;
+	font-size:80px;
 	fill:white;
 	stroke:none;
 	text-align:center;

@@ -125,7 +125,6 @@ function turret(id){
 turret.prototype.advance = function(){
 
 	for(var t=0; t<players.length; t++){
-
 		//not-it players intersecting turret
 		if(players[t].it === false && circularHitTest(this,players[t])){
 			var bulletSearch = true;
