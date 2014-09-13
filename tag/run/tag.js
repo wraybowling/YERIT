@@ -85,18 +85,18 @@ bullet.prototype.hitTest = function(){
 ////
 
 function turret(id){
+	this.x = Math.random()*1024;
+	this.y = Math.random()*768;
 	this.element = document.getElementById('turret_'+id);
-	this.radius = 100;
-	this.x = 1024/2;
-	this.y = 768/2;
 	return this;
 }
 
 turret.prototype.advance = function(){
-	for(i=0; i<players.length; i++){
+
+	for(var t=0; t<players.length; t++){
 		//not it players intersecting turret
-		if(players[i].it === false && circularHitTest(this,players[i])){
-			//var angle = (this.x - players[i].x) / (this.y - players[i].y);
+		if(players[t].it === false && circularHitTest(this,players[t])){
+			//var angle = (this.x - players[t].x) / (this.y - players[t].y);
 			bullets[nextBullet].x = this.x;
 			bullets[nextBullet].y = this.y;
 			//bullets[nextBullet].angle = angle;
@@ -107,7 +107,7 @@ turret.prototype.advance = function(){
 	this.x += Math.random()*7 - 3.5;
 	this.y += Math.random()*7 - 3.5;
 	//this.radius += Math.random()*2 - 1;
-	this.element.setAttributeNS(null,'r',this.radius);
+	//this.element.setAttributeNS(null,'r',this.radius);
 	this.element.setAttributeNS(null,'transform','translate('+this.x+','+this.y+')');
 	return this;
 };
@@ -151,14 +151,23 @@ for(i=0; i<10; i++){
 	tokens.push(new_token);
 }
 
+//debugging faker subscription
 window.poll = function(data){
 	//console.log(data.red);
-
 	redPlayer.advance(data.red.x,data.red.y);
 	greenPlayer.advance(data.green.x,data.green.y);
 	bluePlayer.advance(data.blue.x,data.blue.y);
 
 };
+
+//live sensor subscription
+function messageHandler(data) {
+	redPlayer.advance(data.red.x,data.red.y);
+	greenPlayer.advance(data.green.x,data.green.y);
+	bluePlayer.advance(data.blue.x,data.blue.y);
+}
+var onSensorsMessage = onSensorsMessage || function(){console.error('please load sensor.js');	};
+onSensorsMessage(messageHandler, {});
 
 function tick(){
 	for(i=0; i<10; i++){
