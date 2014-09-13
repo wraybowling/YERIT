@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html>
+<!-- Conway's Game of Life for HTML5 Canvas By Simon Laroche modified by Jonathan Rippy for SPARKcon 2014 -->
+<!--   Originally from https://gist.github.com/simonlc/3889013 -->
+<head>
+	<style>
+		body {
+			margin: 0px;
+			padding: 0px;
+			background-color: #0C141F; /* grey */
+            text-align: center;
+		}
+
+		#h { 
+          color: #6FC3DF; 
+          box-shadow: 0 0 10px rgb(21,171,195); 
+          text-shadow: 0 0 5px rgba(21, 171, 195, 0.7); 
+        }
+		#b { 
+          color: #6FC3DF; 
+        }
+	</style>
+</head>
+<body>
+
+<div>
+     <div id="h" style="font-size: 70px;">LIFE 2.0<br/></div>
+     <br/>
+     <br/>
+     <br/>
+     <div id="b" style="font-size: 50px;">move the sensors around... <br/></div>
+     <br/>
+     <br/>
+     <br/>
+     <div id="b" style="font-size: 40px;">experiment with the four rules of life:</div><br/><br/>
+     <div id="b" style="font-size: 25px;">
+     living cells die with 0 or 1 neighbors; they're lonely<br/><br/>
+     living cells die with more than 3 neighbors; overpopulation<br/><br/>
+     living cells are happy with 2 or 3 neighbors; it's just right<br/><br/>
+     dead cells are reborn with exactly 3 neighbors; it's electric<br/><br/>
+    </div>
+</div>
+</body>
+</html>

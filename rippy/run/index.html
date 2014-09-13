@@ -1,0 +1,324 @@
+<!DOCTYPE HTML>
+<html>
+<!-- Conway's Game of Life for HTML5 Canvas By Simon Laroche modified by Jonathan Rippy for SPARKcon 2014 -->
+<!--   Originally from https://gist.github.com/simonlc/3889013 -->
+<head>
+	<script src="sensors.js"></script>
+	<style>
+		body {
+			margin: 0px;
+			padding: 0px;
+			background-color: #0C141F; /* grey */
+		}
+
+		#s { color: #6FC3DF; box-shadow: 0 0 5px rgb(21,171,195); text-shadow: 0 0 5px rgba(21, 171, 195, 0.7); }
+	</style>
+</head>
+<body onload="doStart();">
+
+<div id="controls">
+<div id="menu">
+<button id="start">start</button>
+<button id="reset">reset</button>
+<button id="random">random</button>
+<div id="s">stats</div>
+<div id="w">--</div>
+</div>
+</div>
+
+<canvas id="myCanvas" style="border:1px solid #000000;"></canvas>
+
+<script>
+//var FPS = 5;
+var FPS = 1;
+var paused = false;
+var gameStarted = false;
+var gLoop;
+var generations = 0;
+var population = 0;
+ 
+var lifeForms = [
+    [[28, 28], [29, 28], [30, 28], [28, 29], [28, 30], [30, 29], [30, 30]], //Arch
+    [[29, 28], [30, 29], [30, 30], [29, 30], [28, 30]], //Glider
+    [[29, 28], [30, 28], [28, 29], [29, 29], [29, 30]], //R-pentomino
+    [[32, 27], [26, 28], [27, 28], [27, 29], [31, 29], [32, 29], [33, 29]] //Diehard
+];
+ 
+var start = document.getElementById('start');
+var reset = document.getElementById('reset');
+var random = document.getElementById('random');
+var stats = document.getElementById('s');
+var wrapper = document.getElementById('w');
+var canvas = document.getElementById('myCanvas');
+var ctx = canvas.getContext('2d');
+ 
+canvas.width = 1500;
+canvas.height = 600;
+wrapper.style.width = canvas.width + 'px';
+stats.style.width = canvas.width - 20 + 'px';
+ 
+function newGrid() {
+    var cells = new Array(canvas.width / 10);
+    for (var i = 0; i < canvas.width / 10; i++) {
+        cells[i] = new Array(canvas.height / 10);
+    }
+    return cells;
+}
+
+/* function neighbours(x, y) { // WORKS, non-wrapping
+    var count = 0;
+    // TODO Test for out of bounds properly.
+    if (x > 0 && y > 0 && x < canvas.width / 10 - 1 && y < canvas.width / 10 - 1) {
+        if (cells[x - 1][y - 1]) { count++; }
+        if (cells[x - 1][y + 1]) { count++; }
+        if (cells[x + 1][y + 1]) { count++; }
+        if (cells[x + 1][y - 1]) { count++; }
+        if (cells[x][y + 1]) { count++; }
+        if (cells[x][y - 1]) { count++; }
+        if (cells[x - 1][y]) { count++; }
+        if (cells[x + 1][y]) { count++; }
+    }
+    return count;
+} */
+
+function neighbours(x, y) { // TESTING, wrapping
+	var count = 0;
+	var width = canvas.width / 10;
+	var height = canvas.height / 10;
+	for( var i = -1; i <= 1; i++ ){
+	for( var j = -1; j <= 1; j++ ){
+	
+	if( i == 0 && j == 0 ){ continue; } // skip checking the same cell.
+
+		// get the xy of a neighbor with grid wrap around.
+		var nx = x + i;
+		if( nx < 0 ){ nx+= width; }
+		if( nx >= width ){ nx-= width; }
+
+		var ny = y + j;
+		if( ny < 0 ){ ny+= height; }
+		if( ny >= height ){ ny-= height; }
+
+		// Check if neighbor is alive.
+		if (cells[nx][ny] == 1) { count++; }
+		if (cells[nx][ny] == 2) { count++; }
+		if (cells[nx][ny] == 3) { count++; }
+		if (cells[nx][ny] == 4) { count++; }
+	    }       
+	}
+        return count;
+}
+ 
+// TRON Colors
+//   http://www.colourlovers.com/palette/1406402/Tron_Legacy_2
+//   http://oranlooney.com/sassy-tron/
+//       http://oranlooney.com/static/tron/index.html
+function clear() {
+    ctx.fillStyle = '#0C141F'; // grey
+    ctx.beginPath();
+    ctx.rect(0, 0, canvas.width, canvas.height);
+    ctx.closePath();
+    ctx.fill();
+    function grid(increment, color) {
+        ctx.fillStyle = color;
+        for (var i = 0; i < canvas.width + 1; i += increment) {
+            ctx.fillRect(i - 1, 0, 2, canvas.height);
+        }
+        for (var i = 0; i < canvas.height + 1; i += increment) {
+            ctx.fillRect(0, i - 1, canvas.width, 2);
+        }
+    }
+    //grid(10, '#300'); // red
+    //grid(100, '#e00'); // red
+    //grid(100, '#6FC3DF'); // neon blue
+    grid(10, '#000'); // black
+    grid(100, '#666666'); // grey
+}
+ 
+function draw() {
+    for (var i = 0; i < cells.length; i++) {
+        for (var j = 0; j < cells[i].length; j++) {
+            if (cells[i][j] != 0) {
+                if (cells[i][j] == 1) {
+                    ctx.fillStyle = '#DF740C'; // orange
+                    ctx.beginPath();
+                    ctx.arc(i * 10 + 5, j * 10 + 5, 4, 0, Math.PI*2, true);
+                    ctx.fill();
+                } else if (cells[i][j] == 2) {
+                    ctx.fillStyle = '#660000'; // red
+                    ctx.fillRect(i * 10 + 1, j * 10 + 1, 16, 16); // square cells
+                    ctx.fillStyle = '#EE0000'; // red
+                    ctx.fillRect(i * 10 + 5, j * 10 + 5, 8, 8); // square cells
+                } else if (cells[i][j] == 3) {
+                    ctx.fillStyle = '#00EE00'; // green
+                    ctx.beginPath();
+                    ctx.arc(i * 10 + 5, j * 10 + 5, 4, 0, Math.PI*2, true);
+                    ctx.fill();
+                } else if (cells[i][j] == 4) {
+                    ctx.fillStyle = '#6FC3DF'; // neon blue
+                    ctx.beginPath();
+                    ctx.arc(i * 10 + 5, j * 10 + 5, 4, 0, Math.PI*2, true);
+                    ctx.fill();
+                }
+            }
+        }
+    }
+}
+ 
+function update() {
+    population = 0;
+    cellsCopy = new Array();
+    for (var x = 0; x < cells.length; x++) {
+        cellsCopy.push(cells[x].slice());
+        for (var y = 0; y < cells[x].length; y++) {
+            if (neighbours(x, y) < 2 || neighbours(x, y) > 3) {
+                cellsCopy[x][y] = 0;
+            } else if (neighbours(x, y) == 3) {
+                cellsCopy[x][y] = 1;
+            }
+            if (cellsCopy[x][y] != 0) {
+                population++;
+            }
+        }
+    }
+    cells = cellsCopy;
+    generations++;
+}
+ 
+function play() {
+    gameStarted = true;
+    if (paused) {
+        gLoop = setInterval(gameLoop, 1000 / FPS);
+        paused = false;
+        start.innerHTML = 'Pause';
+    } else {
+        clearInterval(gLoop);
+        paused = true;
+        start.innerHTML = 'Play';
+    }
+}
+ 
+function resetGame() {
+    paused = false;
+    play();
+    cells = newGrid();
+    generations = 0;
+    population = 0;
+    refresh();
+}
+ 
+function getLife(index) {
+    var life = lifeForms[index] || lifeForms[~~(Math.random() * lifeForms.length)];
+    for (var x = 0; x < life.length; x++) {
+        cells[life[x][0]][life[x][1]] = 1;
+    }
+}
+ 
+canvas.addEventListener('click', function(e) {
+    if (paused) {
+        var mx = ~~((e.pageX - canvas.offsetLeft) / 10);
+        var my = ~~((e.pageY - canvas.offsetTop) / 10);
+        if (cells[mx][my] == 1) {
+            cells[mx][my] = 0;
+        } else {
+            cells[mx][my] = 1;
+        }
+        refresh();
+    }
+}, false);
+
+start.addEventListener('click', play, false);
+ 
+random.addEventListener('click', function() {
+    resetGame();
+    getLife();
+    refresh();
+}, false);
+ 
+reset.addEventListener('click', resetGame, false);
+ 
+function refresh() {
+    clear();
+    draw();
+    stats.innerHTML = 'Generations: ' + generations +
+                      ' Population: ' + population;
+}
+ 
+function gameLoop() {
+    refresh();
+    update();
+}
+
+
+function doStart() {
+    var options = {eventsFile: 'readings', tick: 1000/15.0}; // USE THIS FOR WEB RECORDING
+    //var options = {ws: 'ws://127.0.0.1:1337'}; // USE THIS FOR LIVE INSTALLATION
+
+    var canvas = document.getElementById('myCanvas');
+    var ctx = canvas.getContext('2d');
+
+    // initialize grid
+    cells = newGrid();
+    //getLife(0);
+    //getLife(2);
+    refresh();
+    console.log("cells.length = " + cells.length);
+    console.log("cells[0].length = " + cells[0].length);
+
+    gameStarted = true;
+    paused = false;
+    start.innerHTML = 'Pause';
+
+    var lrx = 0; var lry = 0;
+    var lgx = 0; var lgy = 0;
+    var lbx = 0; var lby = 0;
+
+    function messageHandler(m) { 
+
+        //var d = 5;
+        var d = 1;
+        //var mrx = Math.floor(m.red.x / 5);
+        //var mry = Math.floor(m.red.y / 5);
+        var mrx = Math.floor( ((lrx * 0.75) + (m.red.x * 0.25)) / d);
+        var mry = Math.floor( ((lry * 0.75) + (m.red.y * 0.25)) / d);
+        console.log(m.red.x + ", " + m.red.y + " -> " + mrx + ", " + mry);
+        if (mry > 0 && mrx > 0) {
+            cells[mry][mrx] = 2;
+        }
+
+        //var mgx = Math.floor(m.green.x / 5); // 30
+        //var mgy = Math.floor(m.green.y / 5); // 30
+        var mgx = Math.floor( ((lgx * 0.75) + (m.green.x * 0.25)) / d);
+        var mgy = Math.floor( ((lgy * 0.75) + (m.green.y * 0.25)) / d);
+        console.log(m.green.x + ", " + m.green.y + " -> " + mgx + ", " + mgy);
+        if (mgy > 5 && mgx > 5) { // TODO make sure in bounds!
+            // line (blinker)
+            cells[mgy+0][mgx+0] = 3;
+            cells[mgy-1][mgx+0] = 3;
+            cells[mgy+1][mgx+0] = 3;
+        }
+
+        //var mbx = Math.floor(m.blue.x / 5); // 30
+        //var mby = Math.floor(m.blue.y / 5); // 30
+        var mbx = Math.floor( ((lbx * 0.75) + (m.blue.x * 0.25)) / d);
+        var mby = Math.floor( ((lby * 0.75) + (m.blue.y * 0.25)) / d);
+        console.log(m.blue.x + ", " + m.blue.y + " -> " + mbx + ", " + mby);
+        if (mby > 5 && mbx > 5) { // TODO make sure in bounds!
+            // block (
+            cells[mby+0][mbx+0] = 4;
+            cells[mby+1][mbx+0] = 4;
+            cells[mby+0][mbx+1] = 4;
+            cells[mby+1][mbx+1] = 4;
+        }
+
+        lrx = m.red.x;   lry = m.red.y;
+        lgx = m.green.x; lgy = m.green.y;
+        lbx = m.blue.x;  lby = m.blue.y;
+
+        gameLoop();
+    }
+    onSensorsMessage(messageHandler, options);
+}
+	</script>
+</body>
+</html>
