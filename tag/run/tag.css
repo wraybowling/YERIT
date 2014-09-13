@@ -18,3 +18,12 @@ body{
 	stroke:orange;
 	stroke-weight:1px;
 }
+
+.titles text{
+	font-family: monospace;
+	font-size:20px;
+	fill:white;
+	stroke:none;
+	text-align:center;
+	text-anchor:middle;
+}

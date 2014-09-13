@@ -27,11 +27,11 @@ function circularHitTest(circleA,circleB){
 ////
 
 function player(id){
+	this.id = id;
 	this.score = 0;
 	this.element = document.getElementById('player_'+id);
 	this.radius = 30;
 	this.it = false;
-	this.score = 0;
 }
 
 player.prototype.hitTest = function(target){
@@ -49,7 +49,11 @@ player.prototype.advance = function(x,y){
 			//console.log( circularHitTest(this,tokens[q]) );
 
 			if(circularHitTest(this,tokens[q])){
-				this.score += 100;
+				this.score += 7;
+				var readout = document.getElementById('score_'+this.id);
+				readout.textContent = this.id +':'+ this.score;
+
+				console.log(readout)
 				tokens[q].reset();
 			}
 		}
@@ -92,6 +96,7 @@ bullet.prototype.advance = function(){
 			if(players[p].it === true && circularHitTest(this,players[p])){
 				players[p].it = false;
 				this.owner.it = true;
+				this.owner.score += 3;
 				console.log(this.owner);
 			}
 		}
@@ -109,6 +114,8 @@ bullet.prototype.hitTest = function(){
 function turret(id){
 	this.x = Math.random()*1024;
 	this.y = Math.random()*768;
+	//this.angle = Math.random()*Math.PI*2;
+	//this.velocity = 0;
 	this.radius = 100;
 	this.element = document.getElementById('turret_'+id);
 	return this;
@@ -144,6 +151,7 @@ turret.prototype.advance = function(){
 	}
 	this.x += Math.random()*7 - 3.5;
 	this.y += Math.random()*7 - 3.5;
+	if(this.x<this.radius)
 	this.radius += Math.random()*2 - 1;
 	//this.element.setAttributeNS(null,'r',this.radius);
 	this.element.setAttributeNS(null,'transform','translate('+this.x+','+this.y+')');
@@ -224,4 +232,8 @@ function tick(){
 tick();
 
 var timer = setInterval(tick, 1000/60.0);
+
+var gameStart = document.getElementById('gameStart');
+var gameOver = document.getElementById('gameOver');
+
 
