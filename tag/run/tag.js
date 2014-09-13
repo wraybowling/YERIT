@@ -45,11 +45,12 @@ player.prototype.advance = function(x,y){
 	if(this.it){
 		yerit.setAttributeNS(null,'transform','translate('+x+','+y+')');
 		//console.log(circularHitTest(this,tokens[0]))
-		for(var t=0; t<tokens.length; t++){
+		for(var q=0; q<tokens.length; q++){
+			//console.log( circularHitTest(this,tokens[q]) );
 
-			if(circularHitTest(this,tokens[i])){
-				score += 100;
-				tokens[i].reset();
+			if(circularHitTest(this,tokens[q])){
+				this.score += 100;
+				tokens[q].reset();
 			}
 		}
 	}
