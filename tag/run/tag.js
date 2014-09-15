@@ -10,8 +10,8 @@ var bullets = [];
 var tokens = [];
 var yerit = document.getElementById('yerit');
 
-canvasWidth = 1200;
-canvasHeight = 600;
+canvasWidth = 1260;
+canvasHeight = 530;
 
 ////
 
@@ -32,6 +32,8 @@ function player(id){
 	this.element = document.getElementById('player_'+id);
 	this.radius = 30;
 	this.it = false;
+	this.px = 0;
+	this.py = 0;
 }
 
 player.prototype.hitTest = function(target){
@@ -39,8 +41,10 @@ player.prototype.hitTest = function(target){
 };
 
 player.prototype.advance = function(x,y){
-	this.x = x;
-	this.y = y;
+	this.x = x*0.25 + this.px*0.75;
+	this.y = y*0.25 + this.py*0.75;
+	this.px = this.x;
+	this.py = this.y;
 	this.element.setAttributeNS(null,'transform','translate('+x+','+y+')');
 	if(this.it){
 		yerit.setAttributeNS(null,'transform','translate('+x+','+y+')');
@@ -74,8 +78,8 @@ function bullet(id){
 }
 
 bullet.prototype.reset = function(){
-	//this.x = Math.random() * 1024;
-	//this.y = Math.random() * 768;
+	//this.x = Math.random() * canvasWidth;
+	//this.y = Math.random() * canvasHeight;
 	this.active = false;
 	this.super = false;
 };
@@ -85,7 +89,7 @@ bullet.prototype.advance = function(){
 		this.x += Math.cos(this.angle) * this.velocity;
 		this.y += Math.sin(this.angle) * this.velocity;
 
-		var outOfBounds = this.x < 0 || this.x > 1024 || this.y < 0 || this.y > 768;
+		var outOfBounds = this.x < 0 || this.x > canvasWidth || this.y < 0 || this.y > canvasHeight;
 
 		if(outOfBounds){
 			//this.reset();
@@ -112,18 +116,22 @@ bullet.prototype.hitTest = function(){
 ////
 
 function turret(id){
-	this.x = Math.random()*1024;
-	this.y = Math.random()*768;
 	//this.angle = Math.random()*Math.PI*2;
 	//this.velocity = 0;
-	this.radius = 100;
 	this.element = document.getElementById('turret_'+id);
+	this.reset();
 	return this;
+}
 
+turret.prototype.reset = function(){
+	this.radius = 100;
+	this.x = Math.random()*(canvasWidth - this.radius*2) + this.radius;
+	this.y = Math.random()*(canvasHeight - this.radius*2) + this.radius;
+	this.countdown = 500 + Math.random()*2000;
+	return this;
 }
 
 turret.prototype.advance = function(){
-
 	for(var t=0; t<players.length; t++){
 		//not-it players intersecting turret
 		if(players[t].it === false && circularHitTest(this,players[t])){
@@ -145,15 +153,19 @@ turret.prototype.advance = function(){
 				bullets[nextBullet].angle = angle;
 				bullets[nextBullet].active = true;
 				bullets[nextBullet].owner = players[t];
+				this.radius -= 0.2;
 			}
 		}
 	}
 	this.x += Math.random()*7 - 3.5;
 	this.y += Math.random()*7 - 3.5;
-	if(this.x<this.radius)
-	this.radius += Math.random()*2 - 1;
-	//this.element.setAttributeNS(null,'r',this.radius);
+	this.radius += Math.random()*2 - 1.1;
+	this.element.setAttributeNS(null,'r',this.radius);
 	this.element.setAttributeNS(null,'transform','translate('+this.x+','+this.y+')');
+	//console.log(this.countdown);
+	if(--this.countdown <= 0 || this.radius <= 10){
+		this.reset();
+	}
 	return this;
 };
 
@@ -171,13 +183,16 @@ function token(id){
 token.prototype.advance = function(){
 	this.x += Math.random()*4 - 2;
 	this.y += Math.random()*4 - 2;
+	if(this.x < 50 || this.x > (canvasWidth - 100) || this.y < 50 || this.y > (canvasHeight - 100)){
+		this.reset();
+	}
 	this.element.setAttributeNS(null,'transform','translate('+this.x+','+this.y+')');
 	return this;
 };
 
 token.prototype.reset = function(){
-	this.x = Math.random()*1024;
-	this.y = Math.random()*768;
+	this.x = Math.random()*canvasWidth;
+	this.y = Math.random()*canvasHeight;
 };
 
 ////
@@ -204,21 +219,34 @@ for(var i=0; i<10; i++){
 	tokens.push(new_token);
 }
 
-console.log(tokens);
-
 //debugging faker subscription
 window.poll = function(data){
 	//console.log(data.red);
 	redPlayer.advance(data.red.x,data.red.y);
 	greenPlayer.advance(data.green.x,data.green.y);
 	bluePlayer.advance(data.blue.x,data.blue.y);
+	//console.log(data.red.x,data.red.y);
 };
 
 //live sensor subscription
+var camWidth = 160;
+var camHeight = 30;
+var camLeft = 0;
+var camTop = 0;
+
 function messageHandler(data) {
-	redPlayer.advance(data.red.x,data.red.y);
-	greenPlayer.advance(data.green.x,data.green.y);
-	bluePlayer.advance(data.blue.x,data.blue.y);
+	redPlayer.advance(
+		(data.red.x - camLeft) / camWidth * canvasWidth,
+		(data.red.y - camTop) / camHeight * canvasHeight
+	);
+	greenPlayer.advance(
+		(data.green.x - camLeft) / camWidth * canvasWidth,
+		(data.green.y - camTop) / camHeight * canvasHeight
+	);
+	bluePlayer.advance(
+		(data.blue.x - camLeft) / camWidth * canvasWidth,
+		(data.blue.y - camTop) / camHeight * canvasHeight
+	);
 }
 var onSensorsMessage = onSensorsMessage || function(){console.error('please load sensor.js');	};
 onSensorsMessage(messageHandler, {});

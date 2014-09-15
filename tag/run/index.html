@@ -8,7 +8,7 @@
 
 <body>
 
-<svg width="1024" height="768" style="background:transparent; border:solid 2px orange;">
+<svg width="1260" height="530" style="background:transparent; border:solid 2px orange; position:absolute; top:70px">
 	<defs>
 		<polygon id="token" points="0,9 -12,-12 12,-12" />
 	</defs>
@@ -60,14 +60,14 @@
 		<text id="score_green" x="50%" y="40px">green:0</text>
 		<text id="score_blue" x="80%" y="40px">blue:0</text>
 	</g>
-	<g class="titles">
+	<!--<g class="titles">
 		<text id="gameStart" x="50%" y="50%">YER IT!</text>
 		<text id="gameOver" x="50%" y="50%">GAME OVER</text>
 		<text id="winner" x="50%" y="60%">WHOA! red wins!!</text>
-	</g>
+	</g>-->
 </svg>
 
-<svg id="debug" style="fill:none; stroke-width:2px; width:1024px; height:768px; position:absolute; top:0; left:0; z-index:10">
+<svg id="debug" style="fill:none; stroke-width:2px; width:1024px; height:768px; position:absolute; top:70px; left:0; z-index:10">
 	<circle id="red" r="2" style="stroke:red" cx="50" cy="50"/>
 	<circle id="green" r="7" style="stroke:green" cx="50" cy="50"/>
 	<circle id="blue" r="12" style="stroke:blue" cx="50" cy="50"/>
@@ -76,7 +76,7 @@
 
 
 <script src="../../faker.js" type="text/javascript"></script>
-<script src="../../sensors.js" type="text/javascript"></script>
+<script src="sensors.js" type="text/javascript"></script>
 <script src="tag.js" type="text/javascript"></script>
 
 </body>
